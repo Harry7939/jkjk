@@ -20,22 +20,14 @@
       {{ temperature_b }}°C
     </p>
 
+    <p v-if="needUmbrella" class="glow-text">
+      小婕今天要帶傘喔 🌂
+    </p>
+
     <h1>給小婕的情話產生器 💖</h1>
 
     <!-- 動態圖片綁定 -->
-    //<img :src="currentImage" alt="harry" class="portrait" />
-    <div class="card-wrapper">
-      <div
-        v-for="(card, index) in cards"
-        :key="card.id"
-        class="card"
-        :style="{ zIndex: cards.length - index }"
-        @pointerdown="startDrag($event, index)"
-      >
-        <img :src="card.image" class="card-img" />
-        <p>{{ card.text }}</p>
-      </div>
-    </div>
+    <img :src="currentImage" alt="harry" class="portrait" loading="lazy"/>
 
     <!-- 顯示情話 -->
     <p v-if="message" class="message">{{ message }}</p>
@@ -57,6 +49,8 @@ export default {
       temperature_b: null, 
       weatherDescription_a: '',
       weatherDescription_b: '',
+      todayForecast: [],
+      needUmbrella: false,
       currentImage: 'harry1.jpg',  // 預設圖片
       messages: [
         '我每天醒來的第一件事，就是想小婕。',
@@ -89,9 +83,9 @@ export default {
       this.message = this.messages[index]
 
       // 隨機選圖片檔名 harry1.jpg ~ harry7.jpg
-      const imgIndex = Math.floor(Math.random() * 7) + 1
-      const fileName =  `harry${imgIndex}.jpg`
-      this.currentImage = `${fileName}`
+      //const imgIndex = Math.floor(Math.random() * 7) + 1
+      //const fileName =  `harry${imgIndex}.jpg`
+      //this.currentImage = `${fileName}`
 
       // 觸發按鈕動畫
       const button = document.querySelector('.love-button')
@@ -121,6 +115,28 @@ export default {
       this.weatherDescription_b = data.weather[0].icon
     })
     .catch(err => console.error('台南天氣錯誤:', err))
+
+  fetch(`https://api.openweathermap.org/data/2.5/forecast?q=Zhubei,TW&units=metric&appid=${apiKey}`)
+    .then(res => res.json())
+    .then(data => {
+      const today = new Date().toISOString().split('T')[0]
+      // 早上、中午、下午時間點
+      const timesOfDay = [
+        '06:00:00', '09:00:00',  // 早上
+        '12:00:00', '15:00:00',  // 中午
+        '18:00:00', '21:00:00'   // 下午
+      ]
+       this.todayForecast = data.list.filter(item =>
+        timesOfDay.includes(item.dt_txt.slice(11)) &&
+        item.dt_txt.includes(today)
+      )
+
+      // 判斷是否有雨
+      this.needUmbrella = this.todayForecast.some(item =>
+        item.weather.some(w => w.main.toLowerCase().includes('rain') || w.description.toLowerCase().includes('rain'))
+      )
+    })
+    .catch(err => console.error('預報讀取錯誤:', err))
 }
 
 }
@@ -129,19 +145,34 @@ export default {
 
 <style>
 h1 {
-  font-size: 1.4em; /* 比預設小一點 */
-  color: #cc0066;
+  font-size: 2em; /* 比預設小一點 */
+  color: #0f0e0e;
   margin-bottom: 20px;
 }
 .message {
-  font-size: 1.2em; /* 訊息字體大小 */
-  margin: 30px;
-  transition: all 0.3s ease-in-out;
+  font-size: 2em;
+  font-weight: bold;
+  color: #1a1a1a;
+  text-align: center;
+  animation: rainbowGlow 5s infinite, bubbleMove 0.5s infinite ease-in-out;
+  background: linear-gradient(45deg, #111111);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes bubbleMove {
+  0%, 100% {
+    transform: scale(1) translateY(0px);
+  }
+  50% {
+    transform: scale(1.01) translateY(-2px);
+  }
 }
 
 .love-button {
   font-size: 1.1em; /* 按鈕字體大小 */
-  background-color: #ff6699;
+  background-color: #e7e7e7;
   color: white;
   padding: 12px 30px;
   border: none;
@@ -153,14 +184,23 @@ h1 {
 }
 body {
   margin: 0;
-  background-color: #ffe6f0; /* 淡粉紅背景 */
   font-family: 'Arial', sans-serif;
+  background: linear-gradient(13deg, #fbfafb, #eab5d6, #9481e9);
+  background-size: 400% 400%;
+  animation: dreamyBackground 5s ease infinite;
+}
+
+/* 漸層移動動畫 */
+@keyframes dreamyBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 #app {
   text-align: center;
   margin-top: 60px;
-  color: #cc0066;
+  color: #000000;
 }
 
 .portrait {
@@ -169,7 +209,7 @@ body {
   height: auto;
   border-radius: 15px;
   margin: 20px auto; /* 水平置中 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(3, 1, 1, 0.2);
 }
 
 .message {
@@ -180,7 +220,7 @@ body {
 
 /* 愛心動畫按鈕 */
 .love-button {
-  background-color: #ff6699;
+  background-color: #ffacd1;
   color: white;
   font-size: 1.2em;
   padding: 12px 30px;
@@ -193,15 +233,28 @@ body {
 }
 
 .love-button:hover {
-  background-color: #ff3366;
-  box-shadow: 0 0 15px #ff99cc;
+  background-color: #ac6d97;
+  box-shadow: 0 0 15px #0c0408;
 }
 
 /* 點擊動畫效果 */
 .love-button.active {
   animation: heartbeat 0.4s ease;
 }
+.glow-text {
+  color: black;
+  font-weight: bold;
+  animation: glow 1s infinite alternate;
+}
 
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 5px #f4eaef, 0 0 10px #e6e1e3;
+  }
+  100% {
+    text-shadow: 0 0 20px #d40aef, 0 0 30px #f308a8;
+  }
+}
 @keyframes heartbeat {
   0% { transform: scale(1); }
   30% { transform: scale(1.2); }
