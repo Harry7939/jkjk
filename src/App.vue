@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <h1>點一下按鈕，對小婕說一句情話 💖</h1>
+    <h1>給小婕的情話產生器 💖</h1>
 
-    <!-- 插入圖片 -->
-    <img src="/harry.jpg" alt="harry" class="portrait" />
+    <!-- 動態圖片綁定 -->
+    <img :src="currentImage" alt="harry" class="portrait" />
 
     <!-- 顯示情話 -->
     <p v-if="message" class="message">{{ message }}</p>
@@ -21,36 +21,43 @@ export default {
   data() {
     return {
       message: '',
-        messages: [
-          '我每天醒來的第一件事，就是想小婕。',
-          '小婕的笑容，比陽光還溫暖。',
-          '我願意陪郁婕走過未來每一天。',
-          '小婕就是我世界裡最閃亮的星星。',
-          '我愛你~',
-          '好想小婕QQ',
-          '即使世界崩塌，我也會緊緊牽著小婕的手。',
-          '我每天最期待的，就是聽見小婕的聲音。',
-          '如果愛有形狀，那一定是郁婕的樣子。',
-          '我不需要寫詩，因為小婕本身就是一首詩。',
-          '小婕，你就是我的心肝寶貝！',
-          '欸，今天也要記得想我喔～',
-          '跟你在一起，連呼吸都是甜的。',
-          '小婕，你的笑聲是我一天中最好的音樂。',
-          '我就是想跟你說：我很喜歡你～',
-          '有你在身邊，什麼都不怕。',
-          '小婕，你是我的快樂來源。',
-          '想抱抱小婕，暖暖你的心。',
-          '你知道嗎？我每天都在偷偷愛你。',
-          '郁婕，你是我的小幸運。'
-        ]
+      currentImage: 'harry1.jpg',  // 預設圖片
+      messages: [
+        '我每天醒來的第一件事，就是想小婕。',
+        '小婕的笑容，比陽光還溫暖。',
+        '我願意陪郁婕走過未來每一天。',
+        '小婕就是我世界裡最閃亮的星星。',
+        '我愛你~',
+        '好想小婕QQ',
+        '即使世界崩塌，我也會緊緊牽著小婕的手。',
+        '我每天最期待的，就是聽見小婕的聲音。',
+        '如果愛有形狀，那一定是郁婕的樣子。',
+        '我不需要寫詩，因為小婕本身就是一首詩。',
+        '小婕，你就是我的心肝寶貝！',
+        '欸，今天也要記得想我喔～',
+        '跟你在一起，連呼吸都是甜的。',
+        '小婕，你的笑聲是我一天中最好的音樂。',
+        '我就是想跟你說：我很喜歡你～',
+        '有你在身邊，什麼都不怕。',
+        '小婕，你是我的快樂來源。',
+        '想抱抱小婕，暖暖你的心。',
+        '你知道嗎？我每天都在偷偷愛你。',
+        '郁婕，你是我的小幸運。'
+      ]
     }
   },
   methods: {
     generateMessage() {
+      // 隨機選情話
       const index = Math.floor(Math.random() * this.messages.length)
       this.message = this.messages[index]
 
-      // 觸發愛心動畫
+      // 隨機選圖片檔名 harry1.jpg ~ harry7.jpg
+      const imgIndex = Math.floor(Math.random() * 7) + 1
+      const fileName =  `harry${imgIndex}.jpg`
+      this.currentImage = `${fileName}`
+
+      // 觸發按鈕動畫
       const button = document.querySelector('.love-button')
       button.classList.remove('active')
       void button.offsetWidth
@@ -59,6 +66,7 @@ export default {
   }
 }
 </script>
+
 
 <style>
 h1 {
