@@ -1,9 +1,41 @@
 <template>
   <div id="app">
+    <p>
+      今天新竹天氣：
+      <img
+        :src="`https://openweathermap.org/img/wn/${weatherDescription_a}@2x.png`"
+        alt="新竹天氣圖示"
+        style="width: 30px; height: 30px; vertical-align: middle;"
+      />
+      {{ temperature_a }}°C
+    </p>
+
+    <p>
+      今天台南天氣：
+      <img
+        :src="`https://openweathermap.org/img/wn/${weatherDescription_b}@2x.png`"
+        alt="台南天氣圖示"
+        style="width: 30px; height: 30px; vertical-align: middle;"
+      />
+      {{ temperature_b }}°C
+    </p>
+
     <h1>給小婕的情話產生器 💖</h1>
 
     <!-- 動態圖片綁定 -->
-    <img :src="currentImage" alt="harry" class="portrait" />
+    //<img :src="currentImage" alt="harry" class="portrait" />
+    <div class="card-wrapper">
+      <div
+        v-for="(card, index) in cards"
+        :key="card.id"
+        class="card"
+        :style="{ zIndex: cards.length - index }"
+        @pointerdown="startDrag($event, index)"
+      >
+        <img :src="card.image" class="card-img" />
+        <p>{{ card.text }}</p>
+      </div>
+    </div>
 
     <!-- 顯示情話 -->
     <p v-if="message" class="message">{{ message }}</p>
@@ -21,6 +53,10 @@ export default {
   data() {
     return {
       message: '',
+      temperature_a: null,
+      temperature_b: null, 
+      weatherDescription_a: '',
+      weatherDescription_b: '',
       currentImage: 'harry1.jpg',  // 預設圖片
       messages: [
         '我每天醒來的第一件事，就是想小婕。',
@@ -63,7 +99,30 @@ export default {
       void button.offsetWidth
       button.classList.add('active')
     }
-  }
+
+  },
+  mounted() {
+  const apiKey = '87c59465145d28843021e531e8ccbbac'
+
+  // 新竹天氣資料
+  fetch(`https://api.openweathermap.org/data/2.5/weather?q=Hsinchu,TW&units=metric&appid=${apiKey}`)
+    .then(res => res.json())
+    .then(data => {
+      this.temperature_a = Math.round(data.main.temp)
+      this.weatherDescription_a = data.weather[0].icon
+    })
+    .catch(err => console.error('新竹天氣錯誤:', err))
+
+  // 台南天氣資料
+  fetch(`https://api.openweathermap.org/data/2.5/weather?q=Tainan,TW&units=metric&appid=${apiKey}`)
+    .then(res => res.json())
+    .then(data => {
+      this.temperature_b = Math.round(data.main.temp)
+      this.weatherDescription_b = data.weather[0].icon
+    })
+    .catch(err => console.error('台南天氣錯誤:', err))
+}
+
 }
 </script>
 
