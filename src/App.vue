@@ -23,6 +23,9 @@
     <p v-if="needUmbrella" class="glow-text">
       小婕今天要帶傘喔 🌂
     </p>
+    <p v-else class="glow-text">
+      小婕今天不用帶傘喔 ☀️
+    </p>
 
     <h1>給小婕的情話產生器 💖</h1>
 
@@ -30,12 +33,31 @@
     <img :src="currentImage" alt="harry" class="portrait" loading="lazy"/>
 
     <!-- 顯示情話 -->
-    <p v-if="message" class="message">{{ message }}</p>
+    <p v-if="currentMessage" class="message">
+      {{ currentMessage }}
+    </p>
 
     <!-- 按鈕 -->
-    <button @click="generateMessage" class="love-button">
-      ❤️ 對小婕說情話 ❤️
+    <button @click="switchType('love'); generateMessage()" class="love-button">
+    ❤️ 對小婕說情話
     </button>
+        <button @click="switchType('love'); generateMessage()" class="sorry-button" style="margin-left: 5px;">
+       跟小婕道歉 😢
+    </button>
+
+    <footer>
+    <button @click="showReleaseNote = !showReleaseNote" class="release-toggle-button">
+      {{ showReleaseNote ? 'Hide Release Notes...' : 'View Release Notes...' }}
+    </button>
+
+    <div v-if="showReleaseNote" class="release-footer">
+      <p><strong>Version：</strong>{{ version }}</p>
+      <p><strong>Release Notes：</strong></p>
+      <ul>
+        <li v-for="(note, index) in releaseNotes" :key="index">{{ note }}</li>
+      </ul>
+    </div>
+  </footer>
   </div>
 </template>
 
@@ -44,6 +66,14 @@ export default {
   name: 'App',
   data() {
     return {
+      showReleaseNote: false,
+      version: 'v1.1',
+      releaseNotes: [
+        '新增道歉模式 ❤️‍🩹',
+        '按鈕樣式優化，支援漸層與圓角',
+        '加入「是否要帶傘」判斷功能（下雨機率超過1/3）',
+        '修復訊息重複出現的小問題',
+      ],
       message: '',
       temperature_a: null,
       temperature_b: null, 
@@ -52,48 +82,56 @@ export default {
       todayForecast: [],
       needUmbrella: false,
       currentImage: 'harry1.jpg',  // 預設圖片
-      messages: [
-        '我每天醒來的第一件事，就是想小婕。',
-        '小婕的笑容，比陽光還溫暖。',
-        '我願意陪郁婕走過未來每一天。',
-        '小婕就是我世界裡最閃亮的星星。',
-        '我愛你~',
-        '好想小婕QQ',
-        '即使世界崩塌，我也會緊緊牽著小婕的手。',
-        '我每天最期待的，就是聽見小婕的聲音。',
-        '如果愛有形狀，那一定是郁婕的樣子。',
-        '我不需要寫詩，因為小婕本身就是一首詩。',
-        '小婕，你就是我的心肝寶貝！',
-        '欸，今天也要記得想我喔～',
-        '跟你在一起，連呼吸都是甜的。',
-        '小婕，你的笑聲是我一天中最好的音樂。',
-        '我就是想跟你說：我很喜歡你～',
-        '有你在身邊，什麼都不怕。',
-        '小婕，你是我的快樂來源。',
-        '想抱抱小婕，暖暖你的心。',
-        '你知道嗎？我每天都在偷偷愛你。',
-        '郁婕，你是我的小幸運。'
-      ]
+      currentType: 'love', // or 'sorry'
+      messageList: {
+        love: [
+          '我每天醒來的第一件事，就是想小婕。',
+          '小婕的笑容，比陽光還溫暖。',
+          '我願意陪郁婕走過未來每一天。',
+          '小婕就是我世界裡最閃亮的星星。',
+          '我愛你~',
+          '好想小婕QQ',
+          '即使世界崩塌，我也會緊緊牽著小婕的手。',
+          '我每天最期待的，就是聽見小婕的聲音。',
+          '如果愛有形狀，那一定是郁婕的樣子。',
+          '我不需要寫詩，因為小婕本身就是一首詩。',
+          '小婕，你就是我的心肝寶貝！',
+          '欸，今天也要記得想我喔～',
+          '跟你在一起，連呼吸都是甜的。',
+          '小婕，你的笑聲是我一天中最好的音樂。',
+          '我就是想跟你說：我很喜歡你～'
+        ],
+        sorry: [
+          '對不起小婕，我真的不是故意的…QQ',
+          '如果一句對不起能讓你笑，我願意說一百次。',
+          '小婕，你是我最在乎的人，我不想失去你。',
+          '我知道我錯了，請再給我一次機會好嗎？',
+          '小婕，我的世界少了你，就不完整了。',
+          '對不起讓你難過，我心也跟著痛了。',
+          '你的眼淚，是我最不想看到的東西。',
+          '我不完美，但我願意為你改變。',
+          '我沒有資格要求原諒，但我會努力補償。',
+          '小婕，你生氣的樣子也好可愛，可是我更想看到你笑。',
+          '對不起，我會記住今天的教訓，只為不再讓你傷心。',
+          '我真的很笨，總是在你傷心後才知道自己多在乎你。',
+          '請不要離開我，我已經離不開你了。',
+          '我想你原諒我，不是因為我值得，而是因為我真的愛你。',
+          '這次我真的學乖了，只希望還有機會讓你開心。'
+        ]
+      },
+      currentMessage: ''
     }
   },
   methods: {
-    generateMessage() {
-      // 隨機選情話
-      const index = Math.floor(Math.random() * this.messages.length)
-      this.message = this.messages[index]
-
-      // 隨機選圖片檔名 harry1.jpg ~ harry7.jpg
-      //const imgIndex = Math.floor(Math.random() * 7) + 1
-      //const fileName =  `harry${imgIndex}.jpg`
-      //this.currentImage = `${fileName}`
-
-      // 觸發按鈕動畫
-      const button = document.querySelector('.love-button')
-      button.classList.remove('active')
-      void button.offsetWidth
-      button.classList.add('active')
-    }
-
+  generateMessage() {
+    const messages = this.messageList[this.currentType];
+    const index = Math.floor(Math.random() * messages.length);
+    this.currentMessage = messages[index];
+  },
+  switchType(type) {
+    this.currentType = type;
+    this.currentMessage = ''; // 或保留目前內容
+  }
   },
   mounted() {
   const apiKey = '87c59465145d28843021e531e8ccbbac'
@@ -132,9 +170,14 @@ export default {
       )
 
       // 判斷是否有雨
-      this.needUmbrella = this.todayForecast.some(item =>
-        item.weather.some(w => w.main.toLowerCase().includes('rain') || w.description.toLowerCase().includes('rain'))
+      const rainyCount = this.todayForecast.filter(item =>
+      item.weather.some(w =>
+        w.main.toLowerCase().includes('rain') ||
+        w.description.toLowerCase().includes('rain')
       )
+    ).length;
+
+    this.needUmbrella = (rainyCount / this.todayForecast.length) > (1 / 3);
     })
     .catch(err => console.error('預報讀取錯誤:', err))
 }
@@ -170,18 +213,7 @@ h1 {
   }
 }
 
-.love-button {
-  font-size: 1.1em; /* 按鈕字體大小 */
-  background-color: #e7e7e7;
-  color: white;
-  padding: 12px 30px;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-  outline: none;
-}
+
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
@@ -218,14 +250,32 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
-/* 愛心動畫按鈕 */
 .love-button {
-  background-color: #ffacd1;
+  background: linear-gradient(to right, #e7aabe, #ee90ca);
   color: white;
   font-size: 1.2em;
   padding: 12px 30px;
   border: none;
-  border-radius: 50px;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  outline: none;
+}
+
+.sorry-button {
+  background: linear-gradient(to right, #ee90ca, #e7aabe);
+  color: white;
+  font-size: 1.2em;
+  padding: 12px 30px;
+  border: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
@@ -241,18 +291,48 @@ body {
 .love-button.active {
   animation: heartbeat 0.4s ease;
 }
+
+.sorry-button:hover {
+  background-color: #ac6d97;
+  box-shadow: 0 0 15px #0c0408;
+}
+
+/* 點擊動畫效果 */
+.love-sorry.active {
+  animation: heartbeat 0.4s ease;
+}
 .glow-text {
   color: black;
   font-weight: bold;
   animation: glow 1s infinite alternate;
 }
-
+.release-footer {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #fef3f7;
+  color: #333;
+  border-top: 2px solid #ffacd1;
+  font-size: 0.5em;
+}
+.release-footer ul {
+  padding-left: 1sem;
+  margin-top: 5px;
+}
+.release-toggle-button {
+  background-color: #ffd7eb;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 14px;     /* 更小的上下左右間距 */
+  font-size: 0.9em;       /* 字體縮小一點 */
+  cursor: pointer;
+  margin-top: 20px;       /* 上方間距也微調 */
+}
 @keyframes glow {
   0% {
     text-shadow: 0 0 5px #f4eaef, 0 0 10px #e6e1e3;
   }
   100% {
-    text-shadow: 0 0 20px #d40aef, 0 0 30px #f308a8;
+    text-shadow: 0 0 20px #de6eec, 0 0 30px #f13eb9;
   }
 }
 @keyframes heartbeat {
