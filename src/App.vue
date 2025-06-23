@@ -188,6 +188,8 @@ body {
   background: linear-gradient(13deg, #fbfafb, #eab5d6, #9481e9);
   background-size: 400% 400%;
   animation: dreamyBackground 5s ease infinite;
+  overflow-x: hidden;
+  touch-action: pan-y; /* 只允許垂直滑動 */
 }
 
 /* 漸層移動動畫 */
