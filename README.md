@@ -1,2 +1,2 @@
-# This project is my lover for jk !!!
+# This project is for jk !!!
 
