@@ -66,8 +66,8 @@
     <button @click="switchType('love'); generateMessage()" class="love-button">
     ❤️ 對小婕說情話
     </button>
-        <button @click="switchType('love'); generateMessage()" class="sorry-button" style="margin-left: 5px;">
-       跟小婕道歉 😢
+    <button @click="switchType('sorry'); generateMessage()" class="sorry-button">
+    跟小婕道歉 😢
     </button>
 
 
