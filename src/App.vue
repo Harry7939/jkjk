@@ -28,21 +28,16 @@
     </p>
 
     <h1>給小婕的情話產生器 💖</h1>
-    <p>
-    如果妳看到這段話，<br>
-    代表我正在某個地方，靜靜地等妳。<br><br>
+    <p class="love-text">
+      如果妳看到這段話，<br>
+      代表你想我了吧，跟你說喔，我還在某個地方，靜靜地等妳。<br><br>
 
-    不是要求妳回頭，<br>
-    也不是逼妳做任何決定，<br>
-    只是想讓妳知道——<br><br>
+      如果哪一天，<br>
+      妳想被好好聽、好好珍惜，<br>
+      我一直都在。<br><br>
 
-    有一個人，<br>
-    把妳放在心裡很重要的位置，<br>
-    也願意尊重妳現在的一切選擇。<br><br>
+      如果你願意的話，向我跨出一步就好，剩下的99步交給我
 
-    如果哪一天，<br>
-    妳想被好好聽、好好珍惜，<br>
-    我一直都在。
     </p>
 
     <!-- 動態圖片綁定 -->
@@ -83,12 +78,14 @@ export default {
   data() {
     return {
       showReleaseNote: false,
-      version: 'v1.1',
+      version: 'v1.3',
       releaseNotes: [
         '新增道歉模式 ❤️‍🩹',
         '按鈕樣式優化，支援漸層與圓角',
         '加入「是否要帶傘」判斷功能（下雨機率超過1/3）',
         '修復訊息重複出現的小問題',
+        '跟小婕分開了，希望她還會看看這隻小程式' ,
+        '你看到了的話，讓我知道好嗎？'
       ],
       message: '',
       temperature_a: null,
@@ -271,8 +268,8 @@ body {
 .love-button {
   background: linear-gradient(to right, #e7aabe, #ee90ca);
   color: white;
-  font-size: 1.2em;
-  padding: 12px 30px;
+  font-size: 1em;
+  padding: 8px 16px;
   border: none;
   border-top-left-radius: 50px;
   border-bottom-left-radius: 50px;
@@ -287,8 +284,8 @@ body {
 .sorry-button {
   background: linear-gradient(to right, #ee90ca, #e7aabe);
   color: white;
-  font-size: 1.2em;
-  padding: 12px 30px;
+  font-size: 1em;
+  padding: 8px 16px;
   border: none;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -344,6 +341,10 @@ body {
   font-size: 0.9em;       /* 字體縮小一點 */
   cursor: pointer;
   margin-top: 20px;       /* 上方間距也微調 */
+}
+.love-text {
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+  line-height: 1.6;
 }
 @keyframes glow {
   0% {
